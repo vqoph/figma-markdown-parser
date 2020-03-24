@@ -4,6 +4,7 @@
   "description": "",
   "main": "code.js",
   "scripts": {
+    "start": "npx webpack --mode=development --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,13 +15,20 @@
     "css-loader": "^3.1.0",
     "html-webpack-inline-source-plugin": "0.0.10",
     "html-webpack-plugin": "^3.2.0",
+    "markdown-it": "^10.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "simple-markdown": "^0.7.2",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
     "url-loader": "^2.1.0",
     "webpack": "^4.38.0",
     "webpack-cli": "^3.3.6"
+  },
+  "devDependencies": {
+    "friendly-errors-webpack-plugin": "^1.7.0",
+    "sass": "^1.26.3",
+    "sass-loader": "^8.0.2"
   }
 }
