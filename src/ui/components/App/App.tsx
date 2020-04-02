@@ -2,27 +2,37 @@ import React, { useState } from 'react';
 import markdownFileUpload from '../../lib/markdownFileUpload';
 import postMessage from '../../lib/postMessage';
 
-export default function App() {
-  let fileBox: HTMLInputElement;
-  [fileBox] = useState(undefined);
+async function onUpload(file) {
+  if (!file) return;
+  try {
+    const { name } = file;
+    const content = await markdownFileUpload(file);
 
-  const onUpload = async () => {
-    try {
-      const content = fileBox.files[0]
-        ? await markdownFileUpload(fileBox.files[0])
-        : undefined;
-      postMessage('mi-parse-file', { content });
-    } catch (e) {
-      postMessage('mi-error', { e });
-    }
-  };
+    postMessage('mi-parse-file', { content, name });
+  } catch (e) {
+    postMessage('mi-error', { e });
+  }
+}
+
+export default function App() {
+  const [fileBox, setFileBox] = useState<HTMLInputElement | any>(undefined);
+  const [disabled, setDisabled] = useState<boolean | any>(true);
 
   return (
     <div>
       <img src={require('./logo.svg')} />
       <h2>Markdown importer</h2>
-      <input ref={el => (fileBox = el)} type='file' accept='.md' />
-      <button id='create' onClick={onUpload}>
+      <input
+        ref={setFileBox}
+        type='file'
+        accept='.md'
+        onChange={() => setDisabled(!fileBox || !fileBox.files[0])}
+      />
+      <button
+        id='create'
+        onClick={() => onUpload(fileBox.files[0])}
+        disabled={disabled}
+      >
         Upload
       </button>
       <button onClick={() => postMessage('mi-close-plugin')}>Close plugin</button>

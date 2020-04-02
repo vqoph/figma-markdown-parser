@@ -1,4 +1,4 @@
-import parseFile from './lib/parseFile';
+import { parseFile } from './actions';
 
 figma.showUI(__html__);
 

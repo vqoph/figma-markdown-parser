@@ -1,5 +1,5 @@
-export default function createTextNode(characters) {
-  const text = figma.createText();
+export default function createTextNode(characters = '', textNode?: TextNode) {
+  const text = textNode || figma.createText();
   text.resize(400, 1);
   text.textAutoResize = 'HEIGHT';
   text.characters = characters;

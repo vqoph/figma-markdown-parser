@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dashify": "^2.0.0",
     "remark-parse": "^7.0.2",
     "typescript": "^3.5.3",
     "unified": "^8.4.2"

@@ -3,12 +3,15 @@ import createTextNode from './createTextNode';
 export default function createRichTextNode(
   type: string,
   content: string,
-  textStyles: any
+  textStyles: any,
+  textNode?: TextNode
 ): TextNode {
   const pattern = /\[(.*)\](.*)\[\/(.*)\]/gi;
   const cleanedContent = content.toString().replace(pattern, '$2');
-  const text = createTextNode(cleanedContent);
-  text.textStyleId = (textStyles[type] || textStyles.normal).id;
+  const text = createTextNode(cleanedContent, textNode);
+  if (!textNode) {
+    text.textStyleId = (textStyles[type] || textStyles.normal).id;
+  }
 
   [...content['matchAll'](pattern)].forEach(match => {
     const [initialString, style, contentString] = match;

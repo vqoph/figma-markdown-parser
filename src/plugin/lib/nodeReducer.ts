@@ -1,12 +1,19 @@
-import createTextNode from './createTextNode';
 import createFrame from './createFrame';
 import createRichTextNode from './createRichTextNode';
+import dashify from 'dashify';
+import createTextNode from './createTextNode';
+import createGroup from './createGroup';
 
-export default function nodeReducer(context: { textStyles?: any } = {}) {
+export default function nodeReducer(context: {
+  textStyles: any;
+  parentFrame: FrameNode | GroupNode;
+  parentName?: string;
+}) {
+  const { textStyles, parentName, parentFrame } = context;
+
   return (accumulator, currentNode) => {
-    let text: TextNode;
-    const { type } = currentNode;
-    const { textStyles } = context;
+    const { type, children } = currentNode;
+    const currentName = (parentName ? `${parentName}/` : '') + dashify(type);
 
     try {
       switch (type) {
@@ -17,7 +24,7 @@ export default function nodeReducer(context: { textStyles?: any } = {}) {
         case 'strong':
           const textContent = currentNode.value
             ? currentNode.value
-            : currentNode.children.reduce(nodeReducer({ ...context }), []).join('');
+            : children.reduce(nodeReducer(context), []).join('');
           return [...accumulator, `[${type}]${textContent}[/${type}]`];
 
         case 'break':
@@ -25,17 +32,36 @@ export default function nodeReducer(context: { textStyles?: any } = {}) {
 
         case 'heading':
         case 'paragraph':
-          const content = currentNode.children
-            .reduce(nodeReducer({ ...context }), [])
-            .join('');
-          text = createRichTextNode(type, content, textStyles);
-          return [...accumulator, text];
+        case 'link':
+          const textNode = createTextNode();
+          if (type === 'heading') {
+            const { depth } = currentNode;
+            textNode.textStyleId = (
+              textStyles['heading' + depth] || textStyles.normal
+            ).id;
+          }
+          const content = children.reduce(nodeReducer(context), []).join('');
+
+          const text = createRichTextNode(type, content, textStyles, textNode);
+          return [...accumulator, createGroup([text], parentFrame, currentName)];
+
+        case 'listItem':
+          const listItemContent = children.reduce(nodeReducer({ ...context }), []);
+          return [
+            ...accumulator,
+            createGroup(listItemContent, parentFrame, currentName),
+          ];
 
         case 'list':
         case 'blockquote':
-        case 'listItem':
-          const items = currentNode.children.reduce(nodeReducer(context), []);
-          const frame = createFrame(items);
+          const frame = createFrame();
+          const items = children.reduce(
+            nodeReducer({ ...context, parentName: currentName, parentFrame: frame }),
+            []
+          );
+          frame.name = currentName;
+          items.forEach(item => frame.appendChild(item));
+
           return [...accumulator, frame];
 
         default:
