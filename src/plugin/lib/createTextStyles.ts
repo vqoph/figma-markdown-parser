@@ -21,6 +21,10 @@ export default async function createTextStyles() {
   ]);
 
   const normal = createTextStyle('normal', roboto);
+
+  const link = createTextStyle('link', roboto);
+  link.textDecoration = 'UNDERLINE';
+
   const emphasis = createTextStyle('emphasis', robotoItalic);
   const strong = createTextStyle('strong', robotoBold);
   const heading1 = createTextStyle('heading/1', robotoBold, 36);
@@ -30,6 +34,7 @@ export default async function createTextStyles() {
   const blockquote = createTextStyle('blockquote', robotoItalic, 14);
 
   return {
+    link,
     normal,
     emphasis,
     strong,

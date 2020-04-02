@@ -13,13 +13,14 @@ export default function nodeReducer(context: {
 
   return (accumulator, currentNode) => {
     const { type, children } = currentNode;
-    const currentName = (parentName ? `${parentName}/` : '') + dashify(type);
+    let currentName = (parentName ? `${parentName}/` : '') + dashify(type);
 
     try {
       switch (type) {
         case 'text':
           return [...accumulator, currentNode.value];
 
+        case 'link':
         case 'emphasis':
         case 'strong':
           const textContent = currentNode.value
@@ -32,7 +33,6 @@ export default function nodeReducer(context: {
 
         case 'heading':
         case 'paragraph':
-        case 'link':
           const textNode = createTextNode();
           if (type === 'heading') {
             const { depth } = currentNode;
